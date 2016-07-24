@@ -79,12 +79,34 @@ public class Spreadsheet implements Grid
 			}
 			// COMMAND: Set a cell
 			else if (rest.charAt(0) == '=') {
-				String value = trimleft(rest.substring(1));
+				String value = rest.substring(1).trim();
 				if (value.startsWith("\"") && value.endsWith("\"")) {
-					setCell(loc, new TextCell(value.substring(1, value.length()-1)));
+					setCell(loc, new TextCell(value));
 					return getGridText();
 				}
-				// ERROR! for now until we implement more cell types
+				else if (value.endsWith("%")) {
+					try {
+						double dval = Double.valueOf(value.substring(0, value.length()-1));
+						setCell(loc, new PercentCell(String.valueOf(dval / 100)));
+						return getGridText();
+					} catch (NumberFormatException e) {
+						// ERROR! Invalid Percent
+					}
+				}
+				else if (value.startsWith("(") && value.endsWith(")")) {
+					setCell(loc, new FormulaCell(value));
+					return getGridText();
+				}
+				else {
+					try {
+						// Try to convert to a Double.
+						Double.valueOf(value);
+						setCell(loc, new ValueCell(value));
+						return getGridText();
+					} catch (NumberFormatException e) {
+					}
+				}
+				// ERROR!
 			}
 		}
 

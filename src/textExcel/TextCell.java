@@ -2,18 +2,18 @@ package textExcel;
 
 public class TextCell implements Cell {
 
+	// value should begin and end with double quotes (")
 	String value;
 	
 	@Override
 	public String abbreviatedCellText() {
-		// TODO Auto-generated method stub
-		return Spreadsheet.truncateOrPad(value);
+		// print it without the quotes
+		return Spreadsheet.truncateOrPad(value.substring(1, value.length()-1));
 	}
 
 	@Override
 	public String fullCellText() {
-		// TODO Auto-generated method stub
-		return '"' + value + '"';
+		return value;
 	}
 
 	/**

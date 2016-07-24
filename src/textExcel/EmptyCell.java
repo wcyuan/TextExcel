@@ -14,4 +14,8 @@ public class EmptyCell implements Cell {
 		return "";
 	}
 
+	@Override
+	public String cellType() {
+		return "EmptyCell";
+	}
 }

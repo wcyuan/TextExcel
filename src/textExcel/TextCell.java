@@ -15,4 +15,9 @@ public class TextCell extends RootCell {
 	public TextCell(String value) {
 		super(value);
 	}
+
+	@Override
+	public String cellType() {
+		return "TextCell";
+	}
 }

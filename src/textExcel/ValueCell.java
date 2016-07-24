@@ -17,4 +17,9 @@ public class ValueCell extends RealCell {
 	public double getDoubleValue() {
 		return doubleValue;
 	}
+
+	@Override
+	public String cellType() {
+		return "ValueCell";
+	}
 }

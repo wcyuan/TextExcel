@@ -17,4 +17,9 @@ public class FormulaCell extends RealCell {
 		// not yet implemented
 		return 0;
 	}
+
+	@Override
+	public String cellType() {
+		return "FormulaCell";
+	}
 }

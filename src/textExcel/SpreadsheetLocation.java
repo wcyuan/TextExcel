@@ -32,6 +32,11 @@ public class SpreadsheetLocation implements Location
     	return LETTERS.charAt(idx);
     }
 
+    @Override
+    public String toString() {
+    	return String.valueOf(colIdxToChar(col)) + (row+1);
+    }
+
     public boolean parseCellName(String cellName) {
     	row = 0;
     	col = 0;

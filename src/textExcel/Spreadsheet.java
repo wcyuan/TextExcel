@@ -4,16 +4,14 @@ package textExcel;
 
 public class Spreadsheet implements Grid
 {
-	static int NUM_ROWS = 20;
-	static int NUM_COLS = 12;
-	static int CELL_WIDTH = 10;
-	static int LABEL_WIDTH = 3;
-	// PAD must be at least as long as max(CELL_WIDTH, LABEL_WIDTH)
-	static String PAD = "          ";
-	static String DELIMITER = "|";
-	static Cell EMPTY = new EmptyCell();
+	private static int NUM_ROWS = 20;
+	private static int NUM_COLS = 12;
+	private static int CELL_WIDTH = 10;
+	private static int LABEL_WIDTH = 3;
+	private static String DELIMITER = "|";
+	private static Cell EMPTY = new EmptyCell();
 	
-	Cell data[][];
+	private Cell data[][];
 	Spreadsheet() {
 		data = new Cell[NUM_ROWS][NUM_COLS];
 		clearAll();
@@ -33,7 +31,7 @@ public class Spreadsheet implements Grid
 		}
 	}
 
-	public static String trimleft(String orig)
+	private static String trimleft(String orig)
 	{
 		int start = 0;
 		while (start < orig.length() && Character.isWhitespace(orig.charAt(start))) {
@@ -42,7 +40,7 @@ public class Spreadsheet implements Grid
 		return orig.substring(start);
 	}
 
-	public static int firstNonalphnumericCharIdx(String command)
+	private static int firstNonalphnumericCharIdx(String command)
 	{
 		int idx = 0;
 		while (idx < command.length() && Character.isLetterOrDigit(command.charAt(idx))) {
@@ -140,7 +138,7 @@ public class Spreadsheet implements Grid
 		return truncateOrPad(label, LABEL_WIDTH) + DELIMITER + String.join(DELIMITER, values) + DELIMITER;
 	}
 
-	public static String truncateOrPad(String value, int length) {
+	private static String truncateOrPad(String value, int length) {
 		String format = "%-" + length + "." + length + "s";
 		return String.format(format, value);
 	}

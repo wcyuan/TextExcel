@@ -1,26 +1,18 @@
 package textExcel;
 
-public class TextCell implements Cell {
+public class TextCell extends RootCell {
 
-	// value should begin and end with double quotes (")
-	String value;
-	
 	@Override
 	public String abbreviatedCellText() {
 		// print it without the quotes
-		return Spreadsheet.truncateOrPad(value.substring(1, value.length()-1));
-	}
-
-	@Override
-	public String fullCellText() {
-		return value;
+		return Spreadsheet.truncateOrPad(fullCellText().substring(1, fullCellText().length()-1));
 	}
 
 	/**
 	 * @param value
 	 */
+	// value should begin and end with double quotes (")
 	public TextCell(String value) {
-		super();
-		this.value = value;
+		super(value);
 	}
 }

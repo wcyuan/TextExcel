@@ -2,7 +2,7 @@ package textExcel;
 
 public class ValueCell extends RealCell {
 	
-	double doubleValue;
+	private double doubleValue;
 	public ValueCell(String stringValue) {
 		super(stringValue);
 		this.doubleValue = Double.valueOf(stringValue);

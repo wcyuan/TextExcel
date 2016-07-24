@@ -1,16 +1,9 @@
 package textExcel;
 
-public abstract class RealCell implements Cell {
+public abstract class RealCell extends RootCell {
 
-	String stringValue;
 	public RealCell(String value) {
-		super();
-		stringValue = value;
-	}
-
-	@Override
-	public String fullCellText() {
-		return stringValue;
+		super(value);
 	}
 
 	protected abstract double getDoubleValue();

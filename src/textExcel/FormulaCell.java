@@ -9,7 +9,7 @@ public class FormulaCell extends RealCell {
 	@Override
 	public String abbreviatedCellText() {
 		// not yet implemented
-		return Spreadsheet.truncateOrPad(stringValue);
+		return Spreadsheet.truncateOrPad(fullCellText());
 	}
 
 	@Override

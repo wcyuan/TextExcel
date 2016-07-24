@@ -8,6 +8,6 @@ public class PercentCell extends ValueCell {
 
 	@Override
 	public String abbreviatedCellText() {
-		return Spreadsheet.truncateOrPad(String.format("%.9s", (int)(doubleValue * 100)) + "%");
+		return Spreadsheet.truncateOrPad(String.format("%.9s", (int)(getDoubleValue() * 100)) + "%");
 	}
 }

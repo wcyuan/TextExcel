@@ -6,5 +6,10 @@ public abstract class RealCell extends RootCell {
 		super(value);
 	}
 
+	@Override
+	public String abbreviatedCellText() {
+		return Spreadsheet.truncateOrPad(String.valueOf(getDoubleValue()));
+	}
+
 	protected abstract double getDoubleValue();
 }

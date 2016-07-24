@@ -9,11 +9,6 @@ public class ValueCell extends RealCell {
 	}
 
 	@Override
-	public String abbreviatedCellText() {
-		return Spreadsheet.truncateOrPad(String.valueOf(doubleValue));
-	}
-
-	@Override
 	public double getDoubleValue() {
 		return doubleValue;
 	}

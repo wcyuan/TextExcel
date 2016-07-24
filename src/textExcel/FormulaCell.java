@@ -7,12 +7,6 @@ public class FormulaCell extends RealCell {
 	}
 
 	@Override
-	public String abbreviatedCellText() {
-		// not yet implemented
-		return Spreadsheet.truncateOrPad(fullCellText());
-	}
-
-	@Override
 	protected double getDoubleValue() {
 		// not yet implemented
 		return 0;

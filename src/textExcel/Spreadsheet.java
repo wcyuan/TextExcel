@@ -147,7 +147,7 @@ public class Spreadsheet implements Grid
 			return new PercentCell(value);
 		}
 		else if (cellType.equals("FormulaCell")) {
-			return new FormulaCell(value);
+			return new FormulaCell(value, this);
 		}
 		return null;
 	}
@@ -206,7 +206,7 @@ public class Spreadsheet implements Grid
 			}
 		}
 		else if (value.startsWith("(") && value.endsWith(")")) {
-			setCell(loc, new FormulaCell(value));
+			setCell(loc, new FormulaCell(value, this));
 			return getGridText();
 		}
 		else {
@@ -239,6 +239,10 @@ public class Spreadsheet implements Grid
 	@Override
 	public Cell getCell(Location loc)
 	{
+		if (loc.getRow() < 0 || loc.getRow() >= getRows() ||
+			loc.getCol() < 0 || loc.getCol() >= getCols()) {
+			return null;
+		}
 		// What should we do if loc is outside of our grid?
 		return data[loc.getRow()][loc.getCol()];
 	}

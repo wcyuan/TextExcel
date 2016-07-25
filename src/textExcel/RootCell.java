@@ -12,4 +12,9 @@ public abstract class RootCell implements Cell {
 	public String fullCellText() {
 		return stringValue;
 	}
+
+	@Override
+	public String errorText() {
+		return null;
+	}
 }

@@ -2,8 +2,10 @@ package textExcel;
 
 public class FormulaCell extends RealCell {
 
-	Spreadsheet parentSheet;
-	String errorText = null;
+	private Spreadsheet parentSheet;
+	private String errorText = null;
+	private boolean isComputing = false;
+
 	public FormulaCell(String value, Spreadsheet sheet) {
 		super(value);
 		parentSheet = sheet;
@@ -12,6 +14,14 @@ public class FormulaCell extends RealCell {
 	@Override
 	protected double getDoubleValue() {
 		errorText = null;
+		double finalValue = 0.0;
+		// Detect loops
+		if (isComputing) {
+			errorText = "Circular Dependency! " + fullCellText();
+			return finalValue;
+		}
+		isComputing = true;
+
 		String[] parts = fullCellText().split(" ");
 		int idx = 0;
 		int last = parts.length;
@@ -28,51 +38,56 @@ public class FormulaCell extends RealCell {
 				errorText = "Invalid formula: " + fullCellText();
 			}
 			if (last > 1) {
-				return getAve(getRange(parts[idx+1]));
+				finalValue = getAve(getRangeValues(parts[idx+1]));
+			} else {
+				finalValue = 0.0;
 			}
-			return 0.0;
 		}
 		else if (parts[idx].equalsIgnoreCase("SUM")) {
 			if (last-idx != 2) {
 				errorText = "Invalid formula: " + fullCellText();
 			}
 			if (last > 1) {
-				return getSum(getRange(parts[idx+1]));
+				finalValue = getSum(getRangeValues(parts[idx+1]));
+			} else {
+				finalValue = 0.0;
 			}
-			return 0.0;
 		}
 		else {
 			if ((last - idx) % 2 == 0) {
 				errorText = "Invalid formula: " + fullCellText();
 			}
-			double value = getValue(parts[idx]);
+			double arithValue = getValue(parts[idx]);
 			idx++;
 			for (; idx < last - 1; idx += 2) {
 				double nextValue = getValue(parts[idx+1]);
 				switch (parts[idx]) {
 				case "+":
-					value += nextValue;
+					arithValue += nextValue;
 					break;
 				case "-":
-					value -= nextValue;
+					arithValue -= nextValue;
 					break;
 				case "/":
 					if (nextValue == 0) {
 						errorText = "Divide by zero: " + fullCellText();
 					} else {
-						value /= nextValue;
+						arithValue /= nextValue;
 					}
 					break;
 				case "*":
-					value *= nextValue;
+					arithValue *= nextValue;
 					break;
 				default:
 					errorText = "Invalid operator: " + parts[idx] + " in " + fullCellText();
 					break;
 				}
 			}
-			return value;
+			finalValue = arithValue;
 		}
+
+		isComputing = false;
+		return finalValue;
 	}
 
 	private double getValue(String elt) {
@@ -85,16 +100,37 @@ public class FormulaCell extends RealCell {
 			errorText = "Invalid location: " + elt;
 			return 0.0;
 		}
-		Cell cell = parentSheet.getCell(loc);
-		if (cell == null) {
-			errorText = "Location out of bounds: " + elt;
-			return 0.0;
-		}
-		// TODO: detect cycles...
-		return ((RealCell)cell).getDoubleValue();
+		return getLocationValue(loc);
 	}
 
-	private Double[] getRange(String range) {
+	private void addErrorText(String text) {
+		if (errorText == null) {
+			errorText = "";
+		} else {
+			errorText += ", ";
+		}
+		errorText += text;
+	}
+
+	private double getLocationValue(SpreadsheetLocation loc) {
+		Cell cell = parentSheet.getCell(loc);
+		if (cell == null) {
+			addErrorText("Location out of bounds: " + loc);
+			return 0.0;
+		}
+		try {
+			double value = ((RealCell)cell).getDoubleValue();
+			if (cell.errorText() != null) {
+				addErrorText(cell.errorText());
+			}
+			return value;
+		} catch (ClassCastException e) {
+			addErrorText("Cell is not a RealCell: " + loc);
+			return 0.0;
+		}
+	}
+
+	private Double[] getRangeValues(String range) {
 		String[] parts = range.split("-");
 		if (parts.length != 2) {
 			errorText = "Invalid range: " + range;
@@ -117,18 +153,7 @@ public class FormulaCell extends RealCell {
 		Double[] values = new Double[(endRow - startRow + 1)*(endCol - startCol + 1)];
 		for (int idx = 0, row = startRow; row <= endRow; row++) {
 			for (int col = startCol; col <= endCol; col++, idx++) {
-				Cell cell = parentSheet.getCell(new SpreadsheetLocation(row, col));
-				if (cell == null) {
-					if (errorText == null) {
-						errorText = "";
-					} else {
-						errorText += ", ";
-					}
-					errorText += "Location out of bounds: " + row + "," + col;
-					values[idx] = 0.0;
-				} else {
-					values[idx] = ((RealCell)cell).getDoubleValue();
-				}
+				values[idx] = getLocationValue(new SpreadsheetLocation(row, col));
 			}
 		}
 		return values;
@@ -158,10 +183,17 @@ public class FormulaCell extends RealCell {
 
 	@Override
 	public String abbreviatedCellText() {
+		// getDoubleValue will set errorText;
+		double value = getDoubleValue();
 		if (errorText != null) {
 			return errorText;
 			//return Spreadsheet.truncateOrPad(errorText);
 		}
-		return super.abbreviatedCellText();
+		return Spreadsheet.truncateOrPad(String.valueOf(value));
+	}
+
+	@Override
+	public String errorText() {
+		return errorText;
 	}
 }

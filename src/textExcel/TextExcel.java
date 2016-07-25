@@ -14,6 +14,7 @@ public class TextExcel
 		Spreadsheet sheet = new Spreadsheet();
 		Scanner sc = new Scanner(System.in);
         while (true) {
+        	System.out.println("[TextExcel] > ");
             String input = sc.nextLine();
             if (input.equals("quit")) {
                 break;

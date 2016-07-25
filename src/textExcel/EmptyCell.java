@@ -18,4 +18,9 @@ public class EmptyCell implements Cell {
 	public String cellType() {
 		return "EmptyCell";
 	}
+
+	@Override
+	public String errorText() {
+		return null;
+	}
 }

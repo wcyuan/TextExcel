@@ -20,4 +20,18 @@ public class TextCell extends RootCell {
 	public String cellType() {
 		return "TextCell";
 	}
+
+	@Override
+	public int compareTo(Object o) {
+		if (o instanceof TextCell) {
+			TextCell cell = (TextCell)o;
+			return fullCellText().compareTo(cell.fullCellText());
+		} else if (o instanceof EmptyCell) {
+			return 1;
+		} else if (o instanceof RealCell) {
+			return -1;
+		} else {
+			return -1;
+		}
+	}
 }

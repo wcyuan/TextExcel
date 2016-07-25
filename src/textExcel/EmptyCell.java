@@ -23,4 +23,13 @@ public class EmptyCell implements Cell {
 	public String errorText() {
 		return null;
 	}
+
+	@Override
+	public int compareTo(Object o) {
+		if (o instanceof EmptyCell) {
+			return 0;
+		} else {
+			return -1;
+		}
+	}
 }

@@ -84,6 +84,12 @@ public class Spreadsheet implements Grid
 		if (firstWord.equals("open")) {
 			return openFileCommand(rest, command);
 		}
+		if (firstWord.equals("sorta")) {
+			return sortCommand(true, rest, command);
+		}
+		if (firstWord.equals("sortd")) {
+			return sortCommand(false, rest, command);
+		}
 
 		SpreadsheetLocation loc = SpreadsheetLocation.fromCellName(firstWord);
 		if (loc != null) {
@@ -100,6 +106,15 @@ public class Spreadsheet implements Grid
 		}
 
 		return "ERROR: Unrecognized command: " + command;
+	}
+
+	private String sortCommand(boolean isAscending, String range, String command) {
+		SpreadsheetLocation[] locs = getRange(range);
+		if (locs == null) {
+			return "ERROR: Invalid range: " + command;
+		}
+		
+		return getGridText();
 	}
 
 	private String getCellCommand(SpreadsheetLocation loc, String command) {

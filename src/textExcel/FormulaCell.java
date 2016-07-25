@@ -131,30 +131,14 @@ public class FormulaCell extends RealCell {
 	}
 
 	private Double[] getRangeValues(String range) {
-		String[] parts = range.split("-");
-		if (parts.length != 2) {
+		SpreadsheetLocation[] locs = parentSheet.getRange(range);
+		if (locs == null) {
 			errorText = "Invalid range: " + range;
 			return new Double[0];
 		}
-		SpreadsheetLocation start = SpreadsheetLocation.fromCellName(parts[0]);
-		if (start == null) {
-			errorText = "Invalid range: " + range;
-			return new Double[0];
-		}
-		SpreadsheetLocation end = SpreadsheetLocation.fromCellName(parts[1]);
-		if (end == null) {
-			errorText = "Invalid range: " + range;
-			return new Double[0];
-		}
-		int startRow = Math.min(start.getRow(), end.getRow());
-		int endRow = Math.max(start.getRow(), end.getRow());
-		int startCol = Math.min(start.getCol(), end.getCol());
-		int endCol = Math.max(start.getCol(), end.getCol());
-		Double[] values = new Double[(endRow - startRow + 1)*(endCol - startCol + 1)];
-		for (int idx = 0, row = startRow; row <= endRow; row++) {
-			for (int col = startCol; col <= endCol; col++, idx++) {
-				values[idx] = getLocationValue(new SpreadsheetLocation(row, col));
-			}
+		Double[] values = new Double[locs.length];
+		for (int idx = 0; idx < locs.length; idx++) {
+			values[idx] = getLocationValue(locs[idx]);
 		}
 		return values;
 	}

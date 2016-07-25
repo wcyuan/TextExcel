@@ -292,4 +292,29 @@ public class Spreadsheet implements Grid
 		return output;
 	}
 
+	public SpreadsheetLocation[] getRange(String range) {
+		String[] parts = range.split("-");
+		if (parts.length != 2) {
+			return null;
+		}
+		SpreadsheetLocation start = SpreadsheetLocation.fromCellName(parts[0]);
+		if (start == null) {
+			return null;
+		}
+		SpreadsheetLocation end = SpreadsheetLocation.fromCellName(parts[1]);
+		if (end == null) {
+			return null;
+		}
+		int startRow = Math.min(start.getRow(), end.getRow());
+		int endRow = Math.max(start.getRow(), end.getRow());
+		int startCol = Math.min(start.getCol(), end.getCol());
+		int endCol = Math.max(start.getCol(), end.getCol());
+		SpreadsheetLocation[] locs = new SpreadsheetLocation[(endRow - startRow + 1)*(endCol - startCol + 1)];
+		for (int idx = 0, row = startRow; row <= endRow; row++) {
+			for (int col = startCol; col <= endCol; col++, idx++) {
+				locs[idx] = new SpreadsheetLocation(row, col);
+			}
+		}
+		return locs;
+	}
 }

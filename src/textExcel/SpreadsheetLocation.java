@@ -4,8 +4,8 @@ package textExcel;
 
 public class SpreadsheetLocation implements Location
 {
-	int row;
-	int col;
+	private int row;
+	private int col;
 
 	static String LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 

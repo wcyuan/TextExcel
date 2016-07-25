@@ -125,6 +125,10 @@ public class Spreadsheet implements Grid
 					Cell cell = data[row][col];
 					SpreadsheetLocation loc = new SpreadsheetLocation(row, col);
 					if (!cell.cellType().equals("EmptyCell")) {
+						// Instead of cellType, could use
+						// cell.getClass().getName(), but that would include 
+						// the package name
+						// (e.g. textExcel.FormulaCell instead of just FormulaCell)
 						writer.println(loc + "," + cell.cellType() + "," + cell.fullCellText());
 					}
 				}
@@ -137,6 +141,12 @@ public class Spreadsheet implements Grid
 	}
 
 	private Cell makeCell(String cellType, String value) {
+		// If, instead of storing cellType, we stored the
+		// name of the class, we could construct an object
+		// with something like
+		// return (Cell)(Class.forName(cellType).getConstructor(String.class).newInstance(value));
+		// But we'd have to handle the fact that FormulaCell's constructor
+		// also takes a link back to the Spreadsheet.
 		if (cellType.equals("TextCell")) {
 			return new TextCell(value);
 		}

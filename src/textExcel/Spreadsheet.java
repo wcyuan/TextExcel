@@ -24,6 +24,9 @@ public class Spreadsheet implements Grid
 	}
 
 	private boolean setCell(SpreadsheetLocation loc, Cell value) {
+		if (loc == null || value == null) {
+			return false;
+		}
 		if (loc.getRow() < 0 || loc.getRow() >= getRows()) {
 			return false;
 		}
@@ -92,15 +95,17 @@ public class Spreadsheet implements Grid
 			else if (rest.charAt(0) == '=') {
 				return setCellCommand(loc, rest.substring(1).trim(), command);
 			}
+		} else {
+			return "ERROR: Invalid Cell Location: " + command;
 		}
 
-		return "ERROR Unrecognized command: " + command;
+		return "ERROR: Unrecognized command: " + command;
 	}
 
 	private String getCellCommand(SpreadsheetLocation loc, String command) {
 		if (loc.getRow() < 0 || loc.getRow() >= getRows() ||
 			loc.getCol() < 0 || loc.getCol() >= getCols()) {
-			return "ERROR Location Out Of Bounds: " + loc + " " + command;
+			return "ERROR: Location Out Of Bounds: " + loc + " " + command;
 		}
 		return getCell(loc).fullCellText();
 	}
@@ -108,10 +113,10 @@ public class Spreadsheet implements Grid
 	private String clearCellCommand(String cellName, String command) {
 		SpreadsheetLocation loc = SpreadsheetLocation.fromCellName(cellName);
 		if (loc == null) {
-			return "ERROR Invalid Cell: " + command;
+			return "ERROR: Invalid Cell: " + command;
 		}
 		if (!clearCell(loc)) {
-			return "ERROR Cell Out Of Bounds: " + command;
+			return "ERROR: Cell Out Of Bounds: " + command;
 		}
 		return getGridText();
 	}
@@ -135,7 +140,7 @@ public class Spreadsheet implements Grid
 			writer.close();
 			return getGridText();
 		} catch (FileNotFoundException e) {
-			return "ERROR Invalid File: " + e;
+			return "ERROR: Invalid File: " + e;
 		}
 	}
 
@@ -168,22 +173,22 @@ public class Spreadsheet implements Grid
 		    while ((line = br.readLine()) != null) {
 		    	String parts[] = line.split(",");
 		    	if (parts.length != 3) {
-					errors += "ERROR Invalid File Line: " + line + "\n";
+					errors += "ERROR: Invalid File Line: " + line + "\n";
 					continue;
 		    	}
 				SpreadsheetLocation loc = SpreadsheetLocation.fromCellName(parts[0]);
 				if (loc == null) {
-					errors += "ERROR Bad Location: " + line + " " + loc + "\n";
+					errors += "ERROR: Bad Location: " + line + " " + loc + "\n";
 					continue;
 				}
 				
 				Cell cell = makeCell(parts[1], parts[2]);
 				if (cell == null) {
-					errors += "ERROR Bad Cell Type: " + line + "\n";
+					errors += "ERROR: Bad Cell Type: " + line + "\n";
 					continue;
 				}
 				if (!setCell(loc, cell)) {
-					errors += "ERROR Location Out Of Bounds: " + line + " " + loc + "\n";
+					errors += "ERROR: Location Out Of Bounds: " + line + " " + loc + "\n";
 					continue;
 				}
 		    }
@@ -194,40 +199,39 @@ public class Spreadsheet implements Grid
 		    }
 		} catch (IOException e) {
 			// ERROR! Invalid file
-			return "ERROR Invalid File: " + e;
+			return "ERROR: Invalid File: " + e;
 		}
 	}
 
 	private String setCellCommand(SpreadsheetLocation loc, String value, String command) {
+		Cell cell;
 		if (value.startsWith("\"") && value.endsWith("\"")) {
-			if (!setCell(loc, new TextCell(value))) {
-				return "ERROR Cell Out Of Bounds: " + command;
-			}
-			return getGridText();
+			cell = new TextCell(value);
 		}
 		else if (value.endsWith("%")) {
 			try {
 				double dval = Double.valueOf(value.substring(0, value.length()-1));
-				setCell(loc, new PercentCell(String.valueOf(dval / 100)));
-				return getGridText();
+				cell = new PercentCell(String.valueOf(dval / 100));
 			} catch (NumberFormatException e) {
-				return "ERROR Invalid Number: " + e; 
+				return "ERROR: Invalid Number: " + e; 
 			}
 		}
 		else if (value.startsWith("(") && value.endsWith(")")) {
-			setCell(loc, new FormulaCell(value, this));
-			return getGridText();
+			cell = new FormulaCell(value, this);
 		}
 		else {
 			try {
 				// Try to convert to a Double.
 				Double.valueOf(value);
-				setCell(loc, new ValueCell(value));
-				return getGridText();
+				cell = new ValueCell(value);
 			} catch (NumberFormatException e) {
-				return "ERROR Invalid Number: " + e;
+				return "ERROR: Invalid Number: " + e;
 			}
-		}		
+		}
+		if (!setCell(loc, cell)) {
+			return "ERROR: Cell Out Of Bounds: " + command;
+		}
+		return getGridText();
 	}
 
 	@Override

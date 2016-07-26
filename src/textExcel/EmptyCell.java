@@ -1,27 +1,19 @@
 package textExcel;
 
-public class EmptyCell implements Cell {
+public class EmptyCell extends RootCell {
 
-	@Override
-	public String abbreviatedCellText() {
-		// TODO Auto-generated method stub
-		return Spreadsheet.truncateOrPad(fullCellText());
+	public EmptyCell() {
+		super("");
 	}
 
 	@Override
-	public String fullCellText() {
-		// TODO Auto-generated method stub
-		return "";
+	public String abbreviatedCellText() {
+		return Spreadsheet.truncateOrPad(fullCellText());
 	}
 
 	@Override
 	public String cellType() {
 		return "EmptyCell";
-	}
-
-	@Override
-	public String errorText() {
-		return null;
 	}
 
 	@Override

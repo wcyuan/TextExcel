@@ -170,7 +170,8 @@ public class FormulaCell extends RealCell {
 		// getDoubleValue will set errorText;
 		double value = getDoubleValue();
 		if (errorText != null) {
-			return errorText;
+			return Spreadsheet.truncateOrPad("#ERROR");
+			//return errorText;
 			//return Spreadsheet.truncateOrPad(errorText);
 		}
 		return Spreadsheet.truncateOrPad(String.valueOf(value));

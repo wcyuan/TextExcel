@@ -113,8 +113,35 @@ public class Spreadsheet implements Grid
 		if (locs == null) {
 			return "ERROR: Invalid range: " + command;
 		}
-		
+		sortCells(locs, 0, locs.length, isAscending);
 		return getGridText();
+	}
+
+	private void swap(SpreadsheetLocation aa, SpreadsheetLocation bb) {
+		Cell temp = getCell(aa);
+		setCell(aa, getCell(bb));
+		setCell(bb, temp);
+	}
+
+	private void sortCells(SpreadsheetLocation[] locs, int start, int end, boolean isAscending) {
+		if (start+1 >= end) {
+			return;
+		}
+		int next = start + 1;
+		for (int ii = start + 1; ii < end; ii++) {
+			if ((isAscending && getCell(locs[ii]).compareTo(getCell(locs[start])) < 0) ||
+				(!isAscending && getCell(locs[ii]).compareTo(getCell(locs[start])) > 0)) {
+				if (ii != next) {
+					swap(locs[ii], locs[next]);
+				}
+				next++;
+			}
+		}
+		if (next-1 != start) {
+			swap(locs[start], locs[next-1]);
+		}
+		sortCells(locs, start, next - 1, isAscending);
+		sortCells(locs, next, end, isAscending);
 	}
 
 	private String getCellCommand(SpreadsheetLocation loc, String command) {
